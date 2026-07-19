@@ -34,25 +34,3 @@ screen = config["screen"]
 interval = config["interval"]
 
 
-with mss.mss() as sct:
-    monitor = sct.monitors[screen]  # What screen to capture
-    while True:
-        sct_img = sct.grab(monitor)
-        img = Image.frombytes("RGB", sct_img.size, sct_img.rgb)
-
-        # Save screenshot as a temporary file
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-            img.save(tmp.name)
-            # Pass the file path to pytesseract
-            text = pytesseract.image_to_string(tmp.name)
-        os.remove(tmp.name)  # Delete the temporary file
-
-        # Look for keywords
-        found = [word for word in keywords if word.lower() in text.lower()]
-        if found:
-            message = ", ".join(found)
-            print("Found:", message)
-            speak("Found " + message) # Speak the brainrots found
-
-
-        time.sleep(interval)
